@@ -1,0 +1,16 @@
+zuul:
+  routes:
+    api-service:
+      path: /as/**
+      serviceId: api-service
+
+api-service:
+  ribbon.ReadTimeout: 5000
+
+hystrix:
+  command:
+    api-service:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 5000

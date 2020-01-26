@@ -1,0 +1,9 @@
+hazelcast:
+  member: "localhost:5701"
+
+---
+
+spring.profiles: docker
+
+hazelcast:
+  member: "hazelcast-service:5701"
