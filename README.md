@@ -83,5 +83,5 @@ java -jar api-service.jar --server.port=[port]
 ##### Optional improvements:
 * Separate read and write operations into two services
 * Set expiration time for urls
-* Start of api-service must depend on heartbeats of is-service
+* Start of api-service must depend on heartbeats of id-service
 * Add DeveloperConsole service 
