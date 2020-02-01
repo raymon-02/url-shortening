@@ -74,7 +74,6 @@ java -jar api-service.jar --server.port=[port]
 
 ###Improvements
 ##### Strict improvements:
-* Unit tests
 * Integration tests
 * Docker + docker-compose (add task to Gradle)
 * Data storage under Hazelcast
