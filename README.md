@@ -84,4 +84,5 @@ java -jar api-service.jar --server.port=[port]
 * Separate read and write operations into two services
 * Set expiration time for urls
 * Start of api-service must depend on heartbeats of id-service
-* Add DeveloperConsole service 
+* Add DeveloperConsole service
+* Spring-boot-starters for common configs
