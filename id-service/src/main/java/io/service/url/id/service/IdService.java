@@ -3,7 +3,6 @@ package io.service.url.id.service;
 import io.service.url.id.exception.NoAvailableServerIdException;
 import io.service.url.id.model.ServerId;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -17,8 +16,11 @@ public class IdService {
     private static final String IDS = "ABCDEFGHIJKLMNOPQRTSUBWXYZ";
     private static final Lock lock = new ReentrantLock();
 
-    @Autowired
     private HazelcastService hazelcastService;
+
+    public IdService(HazelcastService hazelcastService) {
+        this.hazelcastService = hazelcastService;
+    }
 
     public ServerId getServerId() {
         log.info("Getting server id...");
