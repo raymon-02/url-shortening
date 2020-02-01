@@ -18,18 +18,18 @@ public class HazelcastService {
     @Qualifier("hzInstance")
     private HazelcastInstance hazelcastInstance;
 
-    public Set<Character> getIdsInUse() {
-        ISet<Character> serverIds = hazelcastInstance.getSet(SERVER_IDS);
+    public Set<String> getIdsInUse() {
+        ISet<String> serverIds = hazelcastInstance.getSet(SERVER_IDS);
         return new HashSet<>(serverIds);
     }
 
-    public void saveServerIdAsUse(char id) {
-        ISet<Character> serverIds = hazelcastInstance.getSet(SERVER_IDS);
+    public void saveServerIdAsUse(String id) {
+        ISet<String> serverIds = hazelcastInstance.getSet(SERVER_IDS);
         serverIds.add(id);
     }
 
-    public void deleteServerId(char serverId) {
-        ISet<Character> serverIds = hazelcastInstance.getSet(SERVER_IDS);
-        serverIds.remove(serverId);
+    public void deleteServerId(String id) {
+        ISet<String> serverIds = hazelcastInstance.getSet(SERVER_IDS);
+        serverIds.remove(id);
     }
 }

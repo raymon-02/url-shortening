@@ -4,5 +4,6 @@ import lombok.Value;
 
 @Value
 public class ServerId {
-    private char id;
+    private String id;
+    private String fallbackId;
 }

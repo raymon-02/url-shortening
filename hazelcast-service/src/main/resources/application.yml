@@ -1,0 +1,4 @@
+hazelcast:
+  cpsystem:
+    member:
+      count: 3

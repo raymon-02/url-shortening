@@ -1,17 +1,25 @@
 package io.service.url.shortening.service;
 
 import io.service.url.shortening.client.ServerIdClient;
+import io.service.url.shortening.dto.ServerIdDto;
 import io.service.url.shortening.model.ServerId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RestService {
 
-    @Autowired
     private ServerIdClient serverIdClient;
 
+    public RestService(ServerIdClient serverIdClient) {
+        this.serverIdClient = serverIdClient;
+    }
+
     public ServerId getServerId() {
-        return new ServerId(serverIdClient.getServerId().getId());
+        ServerIdDto serverIdDto = serverIdClient.getServerId();
+        return new ServerId(serverIdDto.getId(), serverIdDto.getFallbackId());
+    }
+
+    public void deleteServerId(String id) {
+        serverIdClient.deleteServerId(id);
     }
 }

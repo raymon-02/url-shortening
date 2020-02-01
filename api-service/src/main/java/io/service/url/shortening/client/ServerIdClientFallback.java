@@ -9,6 +9,11 @@ public class ServerIdClientFallback implements ServerIdClient {
 
     @Override
     public ServerIdDto getServerId() {
-        throw new ServerIdClientException("Error while calling id-service");
+        throw new ServerIdClientException("Error while getting server id");
+    }
+
+    @Override
+    public void deleteServerId(String id) {
+        throw new ServerIdClientException("Error while deleting server id");
     }
 }

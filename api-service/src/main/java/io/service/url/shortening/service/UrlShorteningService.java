@@ -4,13 +4,13 @@ import io.service.url.shortening.exception.UrlNotFoundException;
 import io.service.url.shortening.model.ServerId;
 import io.service.url.shortening.model.UrlData;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutorService;
@@ -31,41 +31,60 @@ public class UrlShorteningService {
 
     private volatile ServerId serverId;
 
-
-    @Value("${url.generate.preset:500000}")
-    private Integer presetUrlAmount;
-
-    @Autowired
+    private Integer presetUrlCount;
     private RestService restService;
-
-    @Autowired
     private HazelcastService hazelcastService;
+
+
+    public UrlShorteningService(
+            @Value("${url.generate.preset:500000}") Integer presetUrlCount,
+            RestService restService,
+            HazelcastService hazelcastService
+    ) {
+        this.presetUrlCount = presetUrlCount;
+        this.restService = restService;
+        this.hazelcastService = hazelcastService;
+    }
 
 
     @PostConstruct
     public void init() {
         serverId = restService.getServerId();
-        Long currentShortUrlNumber = hazelcastService.getCurrentShortUrlNumber(serverId.getId());
-        shortUrlNumber.addAndGet(currentShortUrlNumber == null ? 0 : currentShortUrlNumber);
-        log.info("Server starting with: serverId={}, shortUrlNumber={}", serverId, shortUrlNumber);
+        long currentShortUrlNumber = hazelcastService.getCurrentShortUrlNumber(serverId.getId());
+        shortUrlNumber.addAndGet(currentShortUrlNumber);
+        long sequenceNumber = hazelcastService.getSequenceNumber(serverId.getFallbackId());
+        log.info("Service starting with [\n\n" +
+                        "api-service: [\n" +
+                        "    serverId={},\n" +
+                        "    shortUrlNumber={},\n" +
+                        "    shortUrlSequenceNumber={},\n" +
+                        "    pregenerated url count={},\n" +
+                        "]\n",
+                serverId, shortUrlNumber, sequenceNumber, presetUrlCount
+        );
+    }
+
+    @PreDestroy
+    public void destroy() {
+        log.info("Shutting down, cleaning server id...");
+        restService.deleteServerId(serverId.getId());
+        log.info("Cleaning server id finished");
     }
 
     @EventListener(ApplicationStartedEvent.class)
     public void startAppListener() {
-        log.info("Pre-generating urls started");
         generateUrls();
-        log.info("Pre-generating urls finished");
     }
 
     public String getRedirectUrl(String shortUrl) {
-        log.info("Getting full url for short {}", shortUrl);
+        log.info("Getting full url for short url {}", shortUrl);
         String url = hazelcastService.getUrlByShortUrl(shortUrl);
-
         if (url == null) {
-            log.error("Url for short {} not found", shortUrl);
+            log.error("Url for short url={} not found", shortUrl);
             throw new UrlNotFoundException();
         }
-        log.info("Url for short {} found: url={}", shortUrl, url);
+        log.info("Url for short url={} found: url={}", shortUrl, url);
+
         return url;
     }
 
@@ -74,31 +93,36 @@ public class UrlShorteningService {
         log.info("Short url generating for: {}", urlData.getUrl());
         String shortUrl = shortUrls.pollFirst();
         if (shortUrl == null) {
+            log.debug("");
             generateUrlsConcurrently();
-            shortUrl = generateUrlByNumber(serverId.getId(), hazelcastService.getAndAddSequenceNumber());
+            shortUrl = generateUrlByNumber(
+                    serverId.getFallbackId(),
+                    hazelcastService.getAndAddSequenceNumber(serverId.getFallbackId())
+            );
         }
         log.info("Short url generated: {} -> {}", shortUrl, urlData.getUrl());
-
         hazelcastService.saveUrlData(shortUrl, urlData.getUrl());
 
         return shortUrl;
     }
 
     private void generateUrls() {
+        log.info("Generating urls...");
         long start = shortUrlNumber.get();
-        shortUrlNumber.addAndGet(presetUrlAmount);
+        shortUrlNumber.addAndGet(presetUrlCount);
         hazelcastService.saveCurrentShortUrlNumber(serverId.getId(), shortUrlNumber.get());
         long end = shortUrlNumber.get();
         for (long i = start; i < end; i++) {
             shortUrls.addLast(generateUrlByNumber(serverId.getId(), i));
         }
+        log.info("Generating urls finished");
     }
 
     private void generateUrlsConcurrently() {
         generateUrlsExecutor.execute(this::generateUrls);
     }
 
-    private static String generateUrlByNumber(char id, long number) {
+    private static String generateUrlByNumber(String id, long number) {
         StringBuilder result = new StringBuilder();
         while (number != 0) {
             long index = number % ALPHABET.length();
@@ -106,6 +130,7 @@ public class UrlShorteningService {
             result.append(ALPHABET.charAt((int) index));
         }
         result.append(id);
+
         return result.reverse().toString();
     }
 

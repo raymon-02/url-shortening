@@ -7,5 +7,8 @@ import lombok.Value;
 public class ServerIdDto {
 
     @JsonProperty("id")
-    private char id;
+    private String id;
+
+    @JsonProperty("fallbackId")
+    private String fallbackId;
 }

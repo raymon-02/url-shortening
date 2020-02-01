@@ -1,6 +1,6 @@
 package io.service.url.id.service;
 
-import io.service.url.id.exception.ServerIdNotFoundException;
+import io.service.url.id.exception.NoAvailableServerIdException;
 import io.service.url.id.model.ServerId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,26 +24,29 @@ public class IdService {
         log.info("Getting server id...");
         lock.lock();
         try {
-            Set<Character> idsInUse = hazelcastService.getIdsInUse();
+            Set<String> idsInUse = hazelcastService.getIdsInUse();
             for (int i = 0; i < IDS.length(); i++) {
-                if (!idsInUse.contains(IDS.charAt(i))) {
-                    hazelcastService.saveServerIdAsUse(IDS.charAt(i));
-                    log.info("Server id: {}", IDS.charAt(i));
-                    return new ServerId(IDS.charAt(i));
+                String id = IDS.substring(i, i + 1);
+                if (!idsInUse.contains(id)) {
+                    ServerId result = new ServerId(id.toUpperCase(), id.toLowerCase());
+                    hazelcastService.saveServerIdAsUse(id);
+                    log.info("Server id: {}", result);
+                    return result;
                 }
             }
-            throw new ServerIdNotFoundException("No server id not in use found");
+            log.error("No available server id");
+            throw new NoAvailableServerIdException("No available server id");
         } finally {
             lock.unlock();
         }
     }
 
-    public void deleteServerId(char serverId) {
-        log.info("Deleting {} id from use...", serverId);
+    public void deleteServerId(String id) {
+        log.info("Deleting server id '{}' from use...", id);
         lock.lock();
         try {
-            hazelcastService.deleteServerId(serverId);
-            log.info("Id {} id deleted from use", serverId);
+            hazelcastService.deleteServerId(id);
+            log.info("Server id '{}' deleted from use", id);
         } finally {
             lock.unlock();
         }
