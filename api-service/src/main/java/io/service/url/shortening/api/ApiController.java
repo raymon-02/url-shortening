@@ -20,13 +20,13 @@ public class ApiController {
 
     @GetMapping("/{shortUrl}")
     public RedirectView redirect(@PathVariable("shortUrl") String shortUrl) {
-        log.info("Redirecting url={}...", shortUrl);
+        log.info("Redirecting: url={}...", shortUrl);
         return new RedirectView(urlShorteningService.getRedirectUrl(shortUrl));
     }
 
     @PostMapping("/")
     public ResponseEntity<String> createShortUrl(@RequestBody UrlDto urlDto) {
-        log.info("Shortening url={}", urlDto.getUrl());
+        log.info("Shortening: url={}", urlDto.getUrl());
         return ResponseEntity.ok(
                 urlShorteningService.getShortUrl(new UrlData(urlDto.getUrl()))
         );

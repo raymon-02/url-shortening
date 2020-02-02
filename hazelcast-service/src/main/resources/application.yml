@@ -1,4 +1,18 @@
 hazelcast:
+  members:
+    - "localhost:5701"
+    - "localhost:5702"
+    - "localhost:5703"
   cpsystem:
     member:
       count: 3
+
+---
+
+spring.profiles: docker
+
+hazelcast:
+  members:
+    - "hazelcast-service-1:5701"
+    - "hazelcast-service-2:5701"
+    - "hazelcast-service-3:5701"

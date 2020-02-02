@@ -1,9 +1,18 @@
 hazelcast:
-  member: "localhost:5701"
+  members:
+    - "localhost:5701"
+    - "localhost:5702"
+    - "localhost:5703"
+  redoOperation: true
+  connectionTimeout: 0
+  connectionAttempts: 5
 
 ---
 
 spring.profiles: docker
 
 hazelcast:
-  member: "hazelcast-service:5701"
+  members:
+    - "hazelcast-service-1:5701"
+    - "hazelcast-service-2:5702"
+    - "hazelcast-service-3:5703"

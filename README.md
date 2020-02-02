@@ -78,6 +78,7 @@ java -jar api-service.jar --server.port=[port]
 * Docker + docker-compose (add task to Gradle)
 * Data storage under Hazelcast
 * id-service must free IDs not in use
+* Run services with tune memory
 
 ##### Optional improvements:
 * Add NLB proxy before Zuul 

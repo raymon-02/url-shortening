@@ -1,0 +1,145 @@
+version: "3"
+
+services:
+  eureka-service:
+    build:
+      context: .
+      args:
+        - service_name=${EUREKA_SERVICE_NAME}
+    image: us-eureka-service
+    ports:
+      - "8088:8088"
+    environment:
+      - SERVICE_NAME_ENV=${EUREKA_SERVICE_NAME}
+    container_name: us-eureka-service
+
+  config-service:
+    depends_on:
+      - eureka-service
+    build:
+      context: .
+      args:
+        - service_name=${CONFIG_SERVICE_NAME}
+    image: us-config-service
+    ports:
+      - "8089:8089"
+    environment:
+      - SERVICE_NAME_ENV=${CONFIG_SERVICE_NAME}
+    container_name: us-config-service
+
+  zuul-service:
+    depends_on:
+      - eureka-service
+      - config-service
+    build:
+      context: .
+      args:
+        - service_name=${ZUUL_SERVICE_NAME}
+    image: us-zuul-service
+    ports:
+      - "8090:8090"
+    environment:
+      - SERVICE_NAME_ENV=${ZUUL_SERVICE_NAME}
+    container_name: us-zuul-service
+
+  hazelcast-service-1:
+    build:
+      context: .
+      args:
+        - service_name=${HAZELCAST_SERVICE_NAME}
+    image: us-hazelcast-service
+    ports:
+      - "8082:8080"
+      - "5701:5701"
+    environment:
+      - SERVICE_NAME_ENV=${HAZELCAST_SERVICE_NAME}
+    container_name: us-hazelcast-service-1
+
+  hazelcast-service-2:
+    build:
+      context: .
+      args:
+        - service_name=${HAZELCAST_SERVICE_NAME}
+    image: us-hazelcast-service
+    ports:
+      - "8083:8080"
+      - "5702:5701"
+    environment:
+      - SERVICE_NAME_ENV=${HAZELCAST_SERVICE_NAME}
+      - XMS=4G
+      - XMX=4G
+    container_name: us-hazelcast-service-2
+
+  hazelcast-service-3:
+    depends_on:
+      - eureka-service
+      - config-service
+    build:
+      context: .
+      args:
+        - service_name=${HAZELCAST_SERVICE_NAME}
+    image: us-hazelcast-service
+    ports:
+      - "8084:8080"
+      - "5703:5701"
+    environment:
+      - SERVICE_NAME_ENV=${HAZELCAST_SERVICE_NAME}
+    container_name: us-hazelcast-service-3
+
+  id-service:
+    depends_on:
+      - eureka-service
+      - config-service
+      - hazelcast-service-1
+      - hazelcast-service-2
+      - hazelcast-service-3
+    build:
+      context: .
+      args:
+        - service_name=${ID_SERVICE_NAME}
+    image: us-id-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SERVICE_NAME_ENV=${ID_SERVICE_NAME}
+      - XMS=2G
+      - XMX=2G
+    container_name: us-id-service
+
+  api-service-1:
+    depends_on:
+      - eureka-service
+      - config-service
+      - hazelcast-service-1
+      - hazelcast-service-2
+      - hazelcast-service-3
+      - id-service
+    build:
+      context: .
+      args:
+        - service_name=${API_SERVICE_NAME}
+    image: us-api-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVICE_NAME_ENV=${API_SERVICE_NAME}
+    container_name: us-api-service-1
+
+  api-service-2:
+    depends_on:
+      - eureka-service
+      - config-service
+      - hazelcast-service-1
+      - hazelcast-service-2
+      - hazelcast-service-3
+      - id-service
+    build:
+      context: .
+      args:
+        - service_name=${API_SERVICE_NAME}
+    image: us-api-service
+    ports:
+      - "8079:8080"
+    environment:
+      - SERVICE_NAME_ENV=${API_SERVICE_NAME}
+    container_name: us-api-service-2
