@@ -1,0 +1,28 @@
+plugins {
+    id "org.springframework.boot" version "2.2.1.RELEASE"
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id 'com.google.cloud.tools.jib' version '1.8.0'
+    id "java"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-zuul") {
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-tomcat"
+    }
+    implementation "org.springframework.cloud:spring-cloud-starter-config"
+    implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
+
+    implementation "org.springframework.boot:spring-boot-starter-jetty"
+}
+
+jar {
+    baseName = "zuul-service"
+    group = "io.service.url.zuul"
+    version = "1.0.0"
+}

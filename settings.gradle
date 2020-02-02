@@ -1,0 +1,16 @@
+rootProject.name = 'url-shortening'
+
+include "api-service"
+include "config-service"
+include "eureka-service"
+include "hazelcast-service"
+include "id-service"
+include "zuul-service"
+
+project(":api-service").buildFileName = "./build.gradle"
+project(":config-service").buildFileName = "./build.gradle"
+project(":eureka-service").buildFileName = "./build.gradle"
+project(":hazelcast-service").buildFileName = "./build.gradle"
+project(":id-service").buildFileName = "./build.gradle"
+project(":zuul-service").buildFileName = "./build.gradle"
+
