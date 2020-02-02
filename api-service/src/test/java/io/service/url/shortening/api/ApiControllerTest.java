@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.service.url.shortening.exception.UrlNotFoundException;
 import io.service.url.shortening.model.UrlData;
 import io.service.url.shortening.service.UrlShorteningService;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(ApiController.class)
-class ApiControllerTest {
+public class ApiControllerTest {
 
     private static final String SHORT_URL = "shortUrl";
     private static final String URL = "longUrl";
@@ -36,7 +36,7 @@ class ApiControllerTest {
     private UrlShorteningService urlShorteningService;
 
     @Test
-    void testRedirect() throws Exception {
+    public void testRedirect() throws Exception {
         when(urlShorteningService.getRedirectUrl(anyString())).thenReturn(URL);
         mockMvc.perform(get("/shortUrl")
                 .accept(MediaType.APPLICATION_JSON))
@@ -45,7 +45,7 @@ class ApiControllerTest {
     }
 
     @Test
-    void testRedirectWithNotExistingShortUrl() throws Exception {
+    public void testRedirectWithNotExistingShortUrl() throws Exception {
         when(urlShorteningService.getRedirectUrl(anyString())).thenThrow(new UrlNotFoundException());
         mockMvc.perform(get("/shortUrl")
                 .accept(MediaType.APPLICATION_JSON))
@@ -53,7 +53,7 @@ class ApiControllerTest {
     }
 
     @Test
-    void testRedirectExceptionally() throws Exception {
+    public void testRedirectExceptionally() throws Exception {
         when(urlShorteningService.getRedirectUrl(anyString())).thenThrow(new RuntimeException());
         mockMvc.perform(get("/shortUrl")
                 .accept(MediaType.APPLICATION_JSON))
@@ -61,7 +61,7 @@ class ApiControllerTest {
     }
 
     @Test
-    void testCreateShortUrl() throws Exception {
+    public void testCreateShortUrl() throws Exception {
         UrlData urlData = new UrlData(URL);
         when(urlShorteningService.getShortUrl(urlData)).thenReturn(SHORT_URL);
         mockMvc.perform(post("/")
@@ -73,7 +73,7 @@ class ApiControllerTest {
     }
 
     @Test
-    void testCreateShortUrlExceptionally() throws Exception {
+    public void testCreateShortUrlExceptionally() throws Exception {
         UrlData urlData = new UrlData(URL);
         when(urlShorteningService.getShortUrl(urlData)).thenThrow(new RuntimeException());
         mockMvc.perform(post("/")
