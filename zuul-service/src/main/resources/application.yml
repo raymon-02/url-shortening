@@ -6,6 +6,7 @@ zuul:
 
 api-service:
   ribbon.ReadTimeout: 10000
+  ribbon.ConnectTimeout: 15000
 
 hystrix:
   command:
@@ -13,4 +14,4 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 10000
+            timeoutInMilliseconds: 60000
