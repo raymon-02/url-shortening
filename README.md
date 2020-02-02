@@ -80,6 +80,7 @@ java -jar api-service.jar --server.port=[port]
 * id-service must free IDs not in use
 
 ##### Optional improvements:
+* Add NLB proxy before Zuul 
 * Separate read and write operations into two services
 * Set expiration time for urls
 * Start of api-service must depend on heartbeats of id-service
