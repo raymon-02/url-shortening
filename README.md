@@ -5,12 +5,12 @@
 
 ### Architecture
 Micro-services:
-* api-service &#8722; service to create short urls and redirect by them
-* id-service &#8722; service to identify api-services if multiple of them have been started
-* hazelcast-service &#8722; IMDG service (aka cache) to store and retrieve urls 
-* config-service &#8722; service to store all service configs
-* eureka-service &#8722; service discovery
-* zuul-service &#8722; entry-point service with LB
+* **api-service** &#8722; service to create short urls and redirect by them
+* **id-service** &#8722; service to identify api-services if multiple of them have been started
+* **hazelcast-service** &#8722; IMDG service (aka cache) to store and retrieve urls 
+* **config-service** &#8722; service to store all service configs
+* **eureka-service** &#8722; service discovery
+* **zuul-service** &#8722; entry-point service with LB
 
 Storage:
 * [Hazelcast](https://hazelcast.com/) &#8722; IMDG solution included into hazelcast-service. Can be distributed, so all solution can be scaled easily
@@ -118,16 +118,16 @@ However it can't present performance of all solution so to reduce zuul-service b
 
 ###Improvements
 ##### Strict improvements:
-* Integration tests
 * Data storage under Hazelcast
 * id-service must free IDs not in use
 * Run services with tune memory
+* Start some services must depend on other ones
 
 ##### Optional improvements:
+* Integration tests
 * Docker build images via Gradle task
 * Add NLB proxy before Zuul 
 * Separate read and write operations into two services
 * Set expiration time for urls
-* Start some services must depend on other ones
 * Add DeveloperConsole service
 * Spring-boot-starters for common configs
