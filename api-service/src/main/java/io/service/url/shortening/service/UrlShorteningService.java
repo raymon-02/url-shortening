@@ -69,6 +69,7 @@ public class UrlShorteningService {
         log.info("Shutting down, cleaning server id...");
         restService.deleteServerId(serverId.getId());
         log.info("Cleaning server id finished");
+        generateUrlsExecutor.shutdownNow();
     }
 
     @EventListener(ApplicationStartedEvent.class)
@@ -93,7 +94,7 @@ public class UrlShorteningService {
         log.debug("Short url generating for: {}", urlData.getUrl());
         String shortUrl = shortUrls.pollFirst();
         if (shortUrl == null) {
-            log.debug("");
+            log.debug("No pre-generated urls");
             generateUrlsConcurrently();
             shortUrl = generateUrlByNumber(
                     serverId.getFallbackId(),

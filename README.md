@@ -78,7 +78,7 @@ docker-compose build
 
 ###### Starting docker-compose
 Project has _docker-compose.yml_ for example with the following service configuration:
-* eureke-service - 1 instance
+* eureka-service - 1 instance
 * config-service - 1 instance
 * zuul-service - 1 instance
 * hazelcast-service - 3 instances
@@ -111,12 +111,8 @@ ab -n 100000 -c 4 -k http://localhost:8090/as/<short_url>
 ```
 where _<short_url>_ &#8722; one of short urls generated at previous step
 
-Notice. As _docker-compose_ example has only one zuul-service it becomes a bottleneck.
-So load request can be run against one instance of api-service to have approximate view about api-service performance.
-However it can't present performance of all solution so to reduce zuul-service bottleneck more instances of it must be added.  
 
-
-###Improvements
+### Further improvements
 ##### Strict improvements:
 * Data storage under Hazelcast
 * id-service must free IDs not in use
@@ -126,7 +122,6 @@ However it can't present performance of all solution so to reduce zuul-service b
 ##### Optional improvements:
 * Integration tests
 * Docker build images via Gradle task
-* Add NLB proxy before Zuul 
 * Separate read and write operations into two services
 * Set expiration time for urls
 * Add DeveloperConsole service

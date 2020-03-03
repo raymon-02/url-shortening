@@ -5,21 +5,26 @@ import io.service.url.id.model.ServerId;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Service
 public class IdService {
 
     private static final String IDS = "ABCDEFGHIJKLMNOPQRTSUBWXYZ";
-    private static final Lock lock = new ReentrantLock();
 
     private HazelcastService hazelcastService;
+    private volatile Lock lock;
 
     public IdService(HazelcastService hazelcastService) {
         this.hazelcastService = hazelcastService;
+    }
+
+    @PostConstruct
+    public void init() {
+        lock = hazelcastService.getLock();
     }
 
     public ServerId getServerId() {
