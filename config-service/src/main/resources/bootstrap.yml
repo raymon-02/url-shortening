@@ -5,7 +5,12 @@ spring:
   application:
     name: config-service
   cloud:
-    config.server.git.uri: https://github.com/raymon-02/spring-cloud-base-platform-configs
+    config:
+      name: us-config-service
+      server:
+        git:
+          uri: https://github.com/raymon-02/spring-cloud-configs
+          search-paths: url-shortening
 
 eureka:
   client:
