@@ -112,12 +112,12 @@ ab -n 100000 -c 4 -k http://localhost:8090/as/<short_url>
 where _<short_url>_ &#8722; one of short urls generated at previous step
 
 
-### Further improvements
+### Further possible improvements
 ##### Strict improvements:
 * Data storage under Hazelcast
 * id-service must free IDs not in use
 * Run services with tune memory
-* Start some services must depend on other ones
+* Start up of some service must depend on other ones
 
 ##### Optional improvements:
 * Integration tests
